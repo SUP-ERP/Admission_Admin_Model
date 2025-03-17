@@ -1,6 +1,6 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormData } from "../app/FormDataContext"; // Import form context
 
 export interface EligibilityCriteriaData {
   age: string;
@@ -12,11 +12,12 @@ export interface EligibilityCriteriaData {
 }
 
 interface EligibilityCriteriaProps {
-  onNext: (data: EligibilityCriteriaData) => void;
+  onNext: () => void;
   onPrev?: () => void;
 }
 
 export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCriteriaProps) {
+  const { formData, updateFormData } = useFormData(); // Get global state
   const [criteria, setCriteria] = useState<EligibilityCriteriaData>({
     age: "",
     qualifyingExam: "",
@@ -25,6 +26,13 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
     entranceScore: "",
     residency: false,
   });
+
+  // Load existing data from context if available
+  useEffect(() => {
+    if (formData.eligibilityCriteria) {
+      setCriteria(formData.eligibilityCriteria);
+    }
+  }, [formData.eligibilityCriteria]);
 
   // Update field values based on user input
   const handleChange = (
@@ -55,7 +63,8 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     if (isEligible()) {
-      onNext(criteria);
+      updateFormData("eligibilityCriteria", criteria); // Save data to context
+      onNext();
     } else {
       alert("Please fill in all required fields correctly to proceed.");
     }
@@ -65,10 +74,10 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
     <form onSubmit={handleNext} className="flex-1">
       <div className="space-y-6">
         {/* Eligibility Requirements Notice */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4">
           <p className="font-medium">Eligibility Requirements:</p>
-          <ul className="list-disc pl-5 mt-2">
-            <li>Minimum 17 years of age</li>
+          <ul className="list-disc pl-5 mt-2 ">
+            <li >Minimum 17 years of age</li>
             <li>Completed qualifying examination with minimum 60% marks</li>
             <li>Valid entrance examination score (minimum 100)</li>
           </ul>
@@ -78,12 +87,11 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {/* Age Input */}
           <div>
-            <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Your Age (in years) *
             </label>
             <input
               type="number"
-              id="age"
               name="age"
               value={criteria.age}
               onChange={handleChange}
@@ -95,11 +103,10 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
 
           {/* Qualifying Examination */}
           <div>
-            <label htmlFor="qualifyingExam" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Qualifying Examination *
             </label>
             <select
-              id="qualifyingExam"
               name="qualifyingExam"
               value={criteria.qualifyingExam}
               onChange={handleChange}
@@ -115,12 +122,11 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
 
           {/* Percentage in Qualifying Exam */}
           <div>
-            <label htmlFor="percentage" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Percentage in Qualifying Exam *
             </label>
             <input
               type="number"
-              id="percentage"
               name="percentage"
               value={criteria.percentage}
               onChange={handleChange}
@@ -134,11 +140,10 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
 
           {/* Entrance Examination Selection */}
           <div>
-            <label htmlFor="entranceExam" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Entrance Examination *
             </label>
             <select
-              id="entranceExam"
               name="entranceExam"
               value={criteria.entranceExam}
               onChange={handleChange}
@@ -156,12 +161,11 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
 
           {/* Entrance Examination Score */}
           <div>
-            <label htmlFor="entranceScore" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Entrance Examination Score *
             </label>
             <input
               type="number"
-              id="entranceScore"
               name="entranceScore"
               value={criteria.entranceScore}
               onChange={handleChange}
@@ -175,13 +179,12 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
           <div className="flex items-center">
             <input
               type="checkbox"
-              id="residency"
               name="residency"
               checked={criteria.residency}
               onChange={handleChange}
               className="h-4 w-4 text-blue-600"
             />
-            <label htmlFor="residency" className="ml-2 block text-sm text-gray-700">
+            <label className="ml-2 block text-sm text-gray-700">
               I am a resident of the state
             </label>
           </div>
@@ -216,10 +219,8 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
           type="submit"
           disabled={!isEligible()}
           className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-            isEligible()
-              ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
+            isEligible() ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
         >
           Next
         </button>

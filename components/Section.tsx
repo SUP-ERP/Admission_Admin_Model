@@ -12,6 +12,8 @@ import UploadDocuments from "../sections/UploadDocuments";
 import Declarations from "../sections/Declarations";
 import ReviewSubmit from "../sections/ReviewSubmit";
 import MakePayment from "../sections/MakePayment";
+import { useAuth } from "@/lib/auth-context";
+
 
 // Updated interface to include navigation callbacks
 interface SectionProps {

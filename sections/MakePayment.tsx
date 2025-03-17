@@ -32,7 +32,7 @@ export default function MakePayment({ onNext, onPrev }: MakePaymentProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Make Payment</h3>
+      
 
       <div className="space-y-6">
         <div className="bg-green-50 border border-green-200 p-4 rounded-md">
@@ -41,7 +41,7 @@ export default function MakePayment({ onNext, onPrev }: MakePaymentProps) {
           </p>
         </div>
 
-        <div className="border border-gray-300 p-4 rounded-md bg-white shadow-sm">
+        <div className="mt-2 border border-gray-300 p-4 rounded-md bg-white shadow-sm">
           <p className="text-gray-700">
             Admission Fee: <strong>₹50,000</strong>
           </p>
@@ -64,7 +64,7 @@ export default function MakePayment({ onNext, onPrev }: MakePaymentProps) {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between">
+        <div className="mt-4 flex justify-between">
           {onPrev && (
             <button
               type="button"

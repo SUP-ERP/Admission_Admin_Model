@@ -1,74 +1,290 @@
-"use client";
-import React from "react";
+import { useFormData } from "../app/FormDataContext";
+import { useRef } from "react";
 
-interface ReviewSubmitProps {
-  onNext: () => void;
-  onPrev?: () => void;
-  // Optionally pass in reviewData; here we provide defaults for demonstration.
-  reviewData?: { [key: string]: string | number };
-}
+type ProgramPreference = {
+  name: string;
+};
 
-export default function ReviewSubmit({ onNext, onPrev, reviewData }: ReviewSubmitProps) {
-  // Placeholder review data; in a real application, this data would be passed down.
-  const data = reviewData || {
-    Name: "John Doe",
-    Email: "johndoe@example.com",
-    "Program Selected": "B.Tech Computer Science",
-    "Entrance Exam": "JEE Main",
-  };
+export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, onPrev?: () => void }) {
+  const { formData } = useFormData();
+  const printSectionRef = useRef<HTMLDivElement>(null);
 
-  // When the form is submitted, trigger the onNext callback.
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onNext();
+  const handlePrint = () => {
+    const printContent = printSectionRef.current;
+    if (!printContent) return;
+  
+    // Store original document content
+    const originalContents = document.body.innerHTML;
+    const printContents = printContent.innerHTML;
+    
+    // Create themed print layout
+    document.body.innerHTML = `
+      <style>
+        @media print {
+          @page { margin: 1.5cm; }
+          body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333333; 
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+          }
+          .print-container {
+            max-width: 100%;
+            margin: 0 auto;
+          }
+          .print-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            border-bottom: 2px solid #2e3653; 
+          }
+          .print-logo {
+            max-height: 60px;
+            margin-bottom: 10px;
+          }
+          .print-section { 
+            margin-bottom: 20px; 
+            padding: 15px; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 5px;
+            break-inside: avoid; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+          }
+          h1 { 
+            color: #2e3653; 
+            font-size: 24px; 
+            margin-bottom: 5px; 
+          }
+          h2 { 
+            color: #2e3653; 
+            font-size: 18px; 
+            margin-top: 0; 
+            margin-bottom: 10px; 
+            padding-bottom: 5px; 
+            border-bottom: 1px solid #eee; 
+          }
+          .print-row { 
+            display: flex; 
+            margin-bottom: 8px; 
+            align-items: flex-start;
+          }
+          .print-label { 
+            font-weight: bold; 
+            width: 180px; 
+            color: #444;
+          }
+          .print-value { 
+            flex-grow: 1; 
+          }
+          .signature-section { 
+            margin-top: 60px; 
+            display: flex; 
+            justify-content: space-between; 
+          }
+          .signature-box { 
+            width: 45%; 
+          }
+          .signature-line { 
+            border-top: 1px solid #333; 
+            margin-top: 40px; 
+            padding-top: 5px; 
+            text-align: center; 
+          }
+          .print-footer { 
+            margin-top: 40px; 
+            text-align: center; 
+            font-size: 13px; 
+            color: #666; 
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+          }
+          .document-id {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+          }
+          .document-date {
+            font-size: 14px;
+            color: #555;
+          }
+          .no-print { 
+            display: none; 
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+          }
+          table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+          }
+          table th {
+            background-color: #f6f8fa;
+            color: #2e3653;
+          }
+        }
+      </style>
+      <div class="print-container">
+        <div class="print-header">
+          <h1>Application Review Summary</h1>
+          <div class="document-id">Application ID: APP-${Math.floor(100000 + Math.random() * 900000)}</div>
+          <div class="document-date">Date: ${new Date().toLocaleDateString()}</div>
+        </div>
+        ${printContents}
+        <div class="signature-section">
+          <div class="signature-box">
+            <div class="signature-line">Applicant's Signature</div>
+          </div>
+          <div class="signature-box">
+            <div class="signature-line">Date</div>
+          </div>
+        </div>
+        <div class="print-footer">
+          <p>This is a computer-generated document. Electronic submissions are legally binding.</p>
+          <p>Please verify all information before final submission.</p>
+        </div>
+      </div>
+    `;
+    
+    // Trigger print dialog
+    window.print();
+    
+    // Restore original content after printing
+    document.body.innerHTML = originalContents;
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Review &amp; Submit</h3>
-
-      <div className="space-y-6">
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-md">
-          <p className="text-gray-700">
-            Please review all the details you have entered before submitting. Once submitted,
-            changes may not be allowed.
-          </p>
-        </div>
-
-        <div className="border border-gray-300 p-4 rounded-md bg-white shadow-sm">
-          <p className="text-gray-700">
-            Check your details below. If you need to make any corrections, navigate to the relevant section.
-          </p>
-
-          {/* Dynamically render review details */}
-          <ul className="mt-4 space-y-2 text-gray-700">
-            {Object.entries(data).map(([key, value], index) => (
-              <li key={index}>
-                <strong>{key}:</strong> {value}
-              </li>
+    <div>
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-xl font-bold text-[#2e3653]">Application Review Summary</h2>
+        <button 
+          onClick={handlePrint} 
+          className="px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#3a4266] transition"
+        >
+          Print Review
+        </button>
+      </div>
+      
+      <div ref={printSectionRef} className="print-content">
+        {/* Personal Details */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Personal Details</h2>
+          <div className="space-y-2">
+            {Object.entries(formData.personalDetails).map(([key, value]) => (
+              <div key={key} className="flex print-row">
+                <div className="w-1/3 font-semibold print-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                <div className="w-2/3 print-value">{value as React.ReactNode}</div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          {onPrev && (
-            <button
-              type="button"
-              onClick={onPrev}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
-            >
-              Edit Details
-            </button>
-          )}
-          <button
-            type="submit"
-            className="px-4 py-2 bg-[#FC8939] text-white rounded-md hover:bg-[#e57830] transition"
-          >
-            Confirm &amp; Submit
-          </button>
+        {/* Education History */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Education History</h2>
+          <div className="space-y-3">
+            {formData.educationHistory.map((record, index) => (
+              <div key={index} className={`pb-2 ${index < formData.educationHistory.length - 1 ? 'border-b' : ''}`}>
+                <div className="flex flex-col">
+                  <span className="font-semibold">{record.level}</span>
+                  <span>{record.institution} ({record.yearOfPassing})</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Selection */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Category</h2>
+          <div className="flex print-row">
+            <div className="w-1/3 font-semibold print-label">Selected Category:</div>
+            <div className="w-2/3 print-value">{formData.categorySelection.category} - {formData.categorySelection.subcategory}</div>
+          </div>
+        </div>
+
+        {/* Program Selection */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Program Preferences</h2>
+          <div className="flex print-row">
+            <div className="w-1/3 font-semibold print-label">Institute:</div>
+            <div className="w-2/3 print-value">{formData.programSelection.selectedInstitute}</div>
+          </div>
+          <div className="mt-2">
+            <div className="font-semibold mb-1">Program Preferences:</div>
+            <ol className="list-decimal pl-5">
+              {formData.programSelection.preferences?.map((prog: ProgramPreference, index: number) => (
+                <li key={index} className="mb-1">{prog.name}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        {/* Eligibility Criteria */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Eligibility Criteria</h2>
+          <div className="space-y-2">
+            {Object.entries(formData.eligibilityCriteria).map(([key, value]) => (
+              <div key={key} className="flex print-row">
+                <div className="w-1/3 font-semibold print-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                <div className="w-2/3 print-value">{String(value)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Entrance Examination Details */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Entrance Examination Details</h2>
+          <div className="space-y-2">
+            {Object.entries(formData.entranceDetails).map(([key, value]) => (
+              <div key={key} className="flex print-row">
+                <div className="w-1/3 font-semibold print-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                <div className="w-2/3 print-value">{(value as string | number | boolean).toString()}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Uploaded Documents */}
+        <div className="border p-4 rounded-md mb-6 print-section">
+          <h2 className="font-medium text-lg border-b pb-2 mb-3">Uploaded Documents</h2>
+          <div className="space-y-2">
+            {Object.entries(formData.uploadDocuments).map(([key, file]) => (
+              <div key={key} className="flex print-row">
+                <div className="w-1/3 font-semibold print-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
+                <div className="w-2/3 print-value">
+                  {file instanceof Blob ? (
+                    <div className="flex items-center">
+                      <span className="mr-2">Uploaded</span>
+                      <span className="text-green-500">✓</span>
+                      <a href={URL.createObjectURL(file)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 underline no-print">View</a>
+                    </div>
+                  ) : (
+                    "Not uploaded"
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </form>
+
+      {/* Navigation Buttons */}
+      <div className="mt-6 flex justify-between no-print">
+        {onPrev && (
+          <button onClick={onPrev} className="px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#3a4266] transition">
+            Edit Details
+          </button>
+        )}
+        <button onClick={onNext} className="px-4 py-2 rounded-md transition bg-[#FC8939] text-white hover:bg-[#e57830] cursor-pointer">
+          Confirm & Submit
+        </button>
+      </div>
+    </div>
   );
 }

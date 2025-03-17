@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormData } from "../app/FormDataContext"; // Import the form context
 
 export interface EducationRecord {
   level: string;
@@ -11,11 +12,12 @@ export interface EducationRecord {
 }
 
 interface EducationHistoryProps {
-  onNext: (data: EducationRecord[]) => void;
+  onNext: () => void;
   onPrev?: () => void;
 }
 
 export default function EducationHistory({ onNext, onPrev }: EducationHistoryProps) {
+  const { formData, updateFormData } = useFormData(); // Get context
   const [educationRecords, setEducationRecords] = useState<EducationRecord[]>([
     {
       level: "",
@@ -27,19 +29,23 @@ export default function EducationHistory({ onNext, onPrev }: EducationHistoryPro
     },
   ]);
 
+  // Load existing data from context if available
+  useEffect(() => {
+    if (formData.educationHistory.length > 0) {
+      setEducationRecords(formData.educationHistory);
+    }
+  }, [formData.educationHistory]);
+
   // Add a new empty education record
   const addEducationRecord = () => {
-    setEducationRecords([
-      ...educationRecords,
-      {
-        level: "",
-        institution: "",
-        board: "",
-        yearOfPassing: "",
-        percentage: "",
-        subjects: "",
-      },
-    ]);
+    setEducationRecords([...educationRecords, {
+      level: "",
+      institution: "",
+      board: "",
+      yearOfPassing: "",
+      percentage: "",
+      subjects: "",
+    }]);
   };
 
   // Remove a record by its index
@@ -52,10 +58,7 @@ export default function EducationHistory({ onNext, onPrev }: EducationHistoryPro
   // Update a value in an education record
   const handleEducationChange = (index: number, field: keyof EducationRecord, value: string) => {
     const updatedRecords = [...educationRecords];
-    updatedRecords[index] = {
-      ...updatedRecords[index],
-      [field]: value,
-    };
+    updatedRecords[index] = { ...updatedRecords[index], [field]: value };
     setEducationRecords(updatedRecords);
   };
 
@@ -75,7 +78,8 @@ export default function EducationHistory({ onNext, onPrev }: EducationHistoryPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid()) {
-      onNext(educationRecords);
+      updateFormData("educationHistory", educationRecords); // Save data to context
+      onNext();
     } else {
       alert("Please fill in all required fields in every education record.");
     }
@@ -83,10 +87,7 @@ export default function EducationHistory({ onNext, onPrev }: EducationHistoryPro
 
   return (
     <form onSubmit={handleSubmit} className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Education History</h3>
-      <p className="mb-4">
-        Please provide details of your educational qualifications starting from the highest level.
-      </p>
+      <p className="mb-4">Please provide details of your educational qualifications starting from the highest level.</p>
 
       {educationRecords.map((record, index) => (
         <div key={index} className="bg-gray-50 p-4 rounded-md mb-4">
@@ -217,23 +218,13 @@ export default function EducationHistory({ onNext, onPrev }: EducationHistoryPro
       {/* Navigation Buttons */}
       <div className="flex justify-between mt-6 pt-4 border-t">
         {onPrev && (
-          <button
-            type="button"
-            onClick={onPrev}
-            className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]"
-          >
+          <button onClick={onPrev} className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]">
             Previous
           </button>
         )}
-        <button
-          type="submit"
-          disabled={!isFormValid()}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-            isFormValid()
-              ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
-        >
+        <button type="submit" disabled={!isFormValid()} className={`flex items-center gap-2 px-4 py-2 rounded-md ${isFormValid() ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
+          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}>
           Next
         </button>
       </div>

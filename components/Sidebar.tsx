@@ -1,4 +1,6 @@
 import { ChevronRight } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+
 
 interface SidebarProps {
   sections: { id: number; title: string }[];
@@ -8,10 +10,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ sections, selectedSection, setSelectedSection, progress }: SidebarProps) {
+  const { user, logout, loading } = useAuth();
   return (
     <div className="w-64 bg-[#2e3653] text-white">
       <div className="p-4 bg-[#FC8939] text-white">
-        <h2 className="text-lg font-semibold">First Year B.Tech (JNEC) 2025-26</h2>
+        <h2 className="text-lg font-semibold">{user ? user.selectedProgram : ''} Application Form 2025-26</h2>
         <div className="mt-2">
           <div className="w-full bg-[#eed4c3] rounded-full h-2">
             <div className="bg-white h-2 rounded-full" style={{ width: `${progress}%` }} />

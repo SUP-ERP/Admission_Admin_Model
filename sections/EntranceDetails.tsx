@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormData } from "../app/FormDataContext"; // Import form context
 
 export interface EntranceDetailsData {
   examType: string;
@@ -12,11 +13,12 @@ export interface EntranceDetailsData {
 }
 
 interface EntranceDetailsProps {
-  onNext: (data: EntranceDetailsData) => void;
+  onNext: () => void;
   onPrev?: () => void;
 }
 
 export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps) {
+  const { formData, updateFormData } = useFormData(); // Get global state
   const [entranceDetails, setEntranceDetails] = useState<EntranceDetailsData>({
     examType: "",
     rollNumber: "",
@@ -26,6 +28,13 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
     rank: "",
     validityPeriod: "",
   });
+
+  // Load existing data from context if available
+  useEffect(() => {
+    if (formData.entranceDetails) {
+      setEntranceDetails(formData.entranceDetails);
+    }
+  }, [formData.entranceDetails]);
 
   // Update state when input/select values change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -39,19 +48,20 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
   // Check if all required fields are filled
   const isFormValid = (): boolean => {
     return (
-      entranceDetails.examType.trim() !== "" &&
-      entranceDetails.rollNumber.trim() !== "" &&
-      entranceDetails.yearOfExam.trim() !== "" &&
-      entranceDetails.scoreType.trim() !== "" &&
-      entranceDetails.score.trim() !== ""
+      entranceDetails.examType?.trim() !== "" &&
+      entranceDetails.rollNumber?.trim() !== "" &&
+      entranceDetails.yearOfExam?.trim() !== "" &&
+      entranceDetails.scoreType?.trim() !== "" &&
+      entranceDetails.score?.trim() !== ""
     );
   };
 
-  // On form submission, if valid, pass data to parent using onNext callback
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // On form submission, if valid, save to context and go to next step
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid()) {
-      onNext(entranceDetails);
+      updateFormData("entranceDetails", entranceDetails); // Save to context
+      onNext();
     } else {
       alert("Please fill in all mandatory fields.");
     }
@@ -59,7 +69,6 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
   return (
     <form onSubmit={handleSubmit} className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Entrance Examination Details</h3>
       <div className="space-y-6">
         <div className="bg-blue-50 p-4 rounded-md">
           <p>
@@ -71,11 +80,10 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Entrance Examination Selection */}
           <div>
-            <label htmlFor="examType" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Entrance Examination *
             </label>
             <select
-              id="examType"
               name="examType"
               value={entranceDetails.examType}
               onChange={handleChange}
@@ -95,12 +103,11 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Roll Number / Registration Number */}
           <div>
-            <label htmlFor="rollNumber" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Roll Number/Registration Number *
             </label>
             <input
               type="text"
-              id="rollNumber"
               name="rollNumber"
               value={entranceDetails.rollNumber}
               onChange={handleChange}
@@ -111,12 +118,11 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Year of Examination */}
           <div>
-            <label htmlFor="yearOfExam" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Year of Examination *
             </label>
             <input
               type="number"
-              id="yearOfExam"
               name="yearOfExam"
               value={entranceDetails.yearOfExam}
               onChange={handleChange}
@@ -127,11 +133,10 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Score Type */}
           <div>
-            <label htmlFor="scoreType" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Score Type *
             </label>
             <select
-              id="scoreType"
               name="scoreType"
               value={entranceDetails.scoreType}
               onChange={handleChange}
@@ -147,12 +152,11 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Score */}
           <div>
-            <label htmlFor="score" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Score *
             </label>
             <input
               type="text"
-              id="score"
               name="score"
               value={entranceDetails.score}
               onChange={handleChange}
@@ -163,12 +167,11 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Rank (Optional) */}
           <div>
-            <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Rank (if applicable)
             </label>
             <input
               type="text"
-              id="rank"
               name="rank"
               value={entranceDetails.rank}
               onChange={handleChange}
@@ -178,12 +181,11 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
 
           {/* Validity Period (Optional) */}
           <div>
-            <label htmlFor="validityPeriod" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Validity Period (if applicable)
             </label>
             <input
               type="text"
-              id="validityPeriod"
               name="validityPeriod"
               value={entranceDetails.validityPeriod}
               onChange={handleChange}
@@ -193,11 +195,23 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-end">
+        <div className="flex justify-between mt-6 pt-4 border-t">
+          {onPrev && (
+            <button
+              type="button"
+              onClick={onPrev}
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]"
+            >
+              Previous
+            </button>
+          )}
           <button
             type="submit"
-            className="bg-[#FC8939] text-white px-4 py-2 rounded-md hover:bg-[#e57830] transition disabled:opacity-50"
             disabled={!isFormValid()}
+            className={`px-4 py-2 text-white rounded-md ${
+              isFormValid() ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
           >
             Save & Continue
           </button>

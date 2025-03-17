@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormData } from "../app/FormDataContext"; // Import global form state
 import { CloudUploadIcon, CheckCircleIcon } from "@heroicons/react/outline";
 
 interface CategorySelectionProps {
@@ -8,15 +9,22 @@ interface CategorySelectionProps {
 }
 
 export default function CategorySelection({ onNext, onPrev }: CategorySelectionProps) {
+  const { formData, updateFormData } = useFormData(); // Get global state
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Helper function to validate the form.
-  // For "general", no certificate is required.
-  // For all non-general, a certificate file must be provided.
-  // For "obc" or "pwd", a subcategory selection is also required.
+  // Load existing data from context if available
+  useEffect(() => {
+    if (formData.categorySelection?.category) {
+      setCategory(formData.categorySelection.category);
+      setSubcategory(formData.categorySelection.subcategory || "");
+      setIsFormValid(checkFormValid(formData.categorySelection.category, formData.categorySelection.subcategory, null));
+    }
+  }, [formData.categorySelection]);
+
+  // Helper function to validate the form
   const checkFormValid = (cat: string, subcat: string, file: File | null): boolean => {
     if (cat === "general") {
       return true;
@@ -29,23 +37,22 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
     }
   };
 
-  // Handle category changes and update form validity.
+  // Handle category change
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = e.target.value;
     setCategory(selectedCategory);
-    setSubcategory("");
-    setCertificateFile(null); // Reset file selection
+    setSubcategory(""); 
+    setCertificateFile(null);
     setIsFormValid(checkFormValid(selectedCategory, "", null));
   };
 
-  // Handle updates to the subcategory selection and re-validate.
+  // Handle subcategory change
   const handleSubcategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSubcategory(value);
-    setIsFormValid(checkFormValid(category, value, certificateFile));
+    setSubcategory(e.target.value);
+    setIsFormValid(checkFormValid(category, e.target.value, certificateFile));
   };
 
-  // Process file upload and update form validity.
+  // Handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -54,9 +61,15 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
     }
   };
 
+  // Handle form submission
+  const handleSubmit = () => {
+    updateFormData("categorySelection", { category, subcategory });
+    onNext();
+  };
+
   return (
     <div className="max-w-2xl mx-auto mt-6">
-      {/* Description Card */}
+      {/* Description */}
       <div className="bg-gray-100 p-4 rounded-md border border-gray-300">
         <p className="text-gray-700">
           Selecting the correct category is essential for scholarships, fee structure, and seat allocation based on government policies.
@@ -66,11 +79,10 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
       <div className="space-y-6 mt-6">
         {/* Category Selection */}
         <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200">
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Select Category *
           </label>
           <select
-            id="category"
             value={category}
             onChange={handleCategoryChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -86,14 +98,13 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
           </select>
         </div>
 
-        {/* Subcategory Selection (Only for OBC and PwD) */}
-        {category && category !== "general" && (category === "obc" || category === "pwd") && (
+        {/* Subcategory Selection */}
+        {category && (category === "obc" || category === "pwd") && (
           <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200">
-            <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Sub-Category *
             </label>
             <select
-              id="subcategory"
               value={subcategory}
               onChange={handleSubcategoryChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -117,7 +128,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
           </div>
         )}
 
-        {/* Document Upload Requirement for non-General Categories */}
+        {/* Document Upload Requirement */}
         {category && category !== "general" && (
           <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-md">
             <p className="font-medium text-yellow-800">Important:</p>
@@ -142,7 +153,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
         {/* Document Upload Section */}
         {category && category !== "general" && (
           <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200">
-            <label htmlFor="certificateUpload" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Upload Category Certificate *
             </label>
             <div className="mt-2 flex items-center justify-between bg-gray-100 border border-gray-300 rounded-lg p-3 cursor-pointer">
@@ -164,16 +175,26 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
           </div>
         )}
 
-        {/* Proceed Button */}
-        <button
-          onClick={onNext}
-          className={`w-full px-4 py-2 rounded-md text-white text-lg font-medium transition ${
-            isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"
-          }`}
-          disabled={!isFormValid}
-        >
-          Proceed to Next Step
-        </button>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between">
+          {onPrev && (
+            <button
+              onClick={onPrev}
+              className="mt-4 flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]"
+            >
+              Previous
+            </button>
+          )}
+          <button
+            onClick={handleSubmit}
+            className={`mt-4 flex items-center gap-2 px-4 py-2 rounded-md ${
+              isFormValid? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+            disabled={!isFormValid}
+          >
+            Proceed to Next Step
+          </button>
+        </div>
       </div>
     </div>
   );

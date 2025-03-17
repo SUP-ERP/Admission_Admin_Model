@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { LogOut } from "lucide-react";
 import '../app/globals.css';
+import { useAuth } from "@/lib/auth-context";
+
 
 export default function Header() {
+    const { user, logout, loading } = useAuth();
+  
   return (
     <header className="bg-white border-b">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
@@ -13,8 +17,8 @@ export default function Header() {
           <h1 className="text-xl font-bold text-[#2e3653]">MGM University</h1>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">Welcome, Student</span>
-          <button className="flex items-center gap-2 text-gray-600 hover:text-[#FC8939]">
+          <span className="text-sm text-gray-600">Welcome, {user ? user.name : 'Guest'}</span>
+          <button className="flex items-center gap-2 text-gray-600 hover:text-[#FC8939]" onClick={logout}>
             <LogOut size={16} />
             Logout
           </button>

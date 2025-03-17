@@ -60,6 +60,10 @@ const config: Config = {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        customYellow: {
+          50: "#E7EE4F", // Light shade
+          500: "#E7EE4F", // Regular shade
+        },
       },
       keyframes: {
         'accordion-down': {

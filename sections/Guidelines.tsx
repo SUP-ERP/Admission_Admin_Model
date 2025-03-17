@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 
 interface GuidelinesProps {
   onNext: () => void;
@@ -9,6 +10,7 @@ interface GuidelinesProps {
 
 export default function Guidelines({ onNext, onPrev }: GuidelinesProps) {
   const [isChecked, setIsChecked] = useState(false);
+  const { user, logout, loading } = useAuth();
 
   return (
     <div className="flex-1">
@@ -109,7 +111,7 @@ export default function Guidelines({ onNext, onPrev }: GuidelinesProps) {
       </div>
 
       {/* Mandatory Checkbox */}
-      <div className="mt-6">
+      <div className="mt-5">
         <label className="flex items-center">
           <input
             type="checkbox"
@@ -118,7 +120,7 @@ export default function Guidelines({ onNext, onPrev }: GuidelinesProps) {
             onChange={() => setIsChecked(!isChecked)}
           />
           <span className="ml-2 text-gray-700">
-            I have read, understood, and agree to all the above statements.
+            I, <strong>{user ? user.name : 'Guest'}</strong> have read, understood, and agree to all the above statements.
           </span>
         </label>
       </div>

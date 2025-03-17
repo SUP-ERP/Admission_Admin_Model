@@ -1,21 +1,42 @@
 "use client";
 
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Mail } from "lucide-react";
+import { Mail, Upload, X } from "lucide-react";
 import { ImageCropper } from "@/components/ui/image-cropper";
-import '../app/globals.css';
+import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
   const router = useRouter();
+  const { user, logout, loading } = useAuth();
   const [photo, setPhoto] = useState<string | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isPhotoUpload, setIsPhotoUpload] = useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  // Handle redirects during loading or when not authenticated
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f2ed]">
+        <p className="text-[#2e3653]">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Don't render anything while redirecting
+  }
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -39,6 +60,16 @@ export default function Home() {
     } else {
       setSignature(croppedImage);
     }
+    setCropperOpen(false);
+    setCurrentImage(null);
+  };
+
+  const openUploadModal = () => {
+    setUploadModalOpen(true);
+  };
+
+  const closeUploadModal = () => {
+    setUploadModalOpen(false);
   };
 
   const canContinue = photo && signature;
@@ -65,7 +96,11 @@ export default function Home() {
             <Button variant="outline" className="text-[#2e3653]">
               View Score
             </Button>
-            <Button variant="outline" className="text-[#2e3653]">
+            <Button
+              variant="outline"
+              className="text-[#2e3653]"
+              onClick={logout}
+            >
               Logout
             </Button>
           </div>
@@ -74,99 +109,45 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-semibold text-[#2e3653] mb-8">
-          Welcome to MGM
+          Welcome to MGM University
         </h1>
 
-        <Card className="p-6 mb-8 bg-white">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-[#FC8939] mb-1">
-                You are logged in as
-              </h2>
-              <h3 className="text-xl font-bold text-[#2e3653] mb-2">
-                MHIAT VARIABLE LAYA
-              </h3>
-              <div className="flex items-center text-[#2e3653] mb-6">
-                <Mail className="w-4 h-4 mr-2" />
-                <span>lala@gmail.com</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    className="block text-sm font-medium text-[#2e3653] mb-2"
-                    htmlFor="photo-upload"
-                  >
-                    Profile Photo
-                  </label>
-                  <div className="space-y-4">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, true)}
-                      className="hidden"
-                      id="photo-upload"
-                    />
-                    <label
-                      htmlFor="photo-upload"
-                      className="cursor-pointer inline-block"
-                    >
-                      <div className="w-40 h-40 border-2 border-dashed border-[#FC8939] rounded-lg flex items-center justify-center bg-[#f8f2ed]">
-                        {photo ? (
-                          <img
-                            src={photo}
-                            alt="Profile"
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <span className="text-[#FC8939]">Upload Photo</span>
-                        )}
-                      </div>
-                    </label>
-                    <p className="text-xs text-[#2e3653]">
-                      Upload a clear passport size photo (max 1MB)
-                    </p>
-                  </div>
+        <Card className="p-6 bg-white shadow-md rounded-lg">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              {photo && (
+                <div className="w-16 h-16 border border-[#FC8939] rounded-full overflow-hidden">
+                  <img
+                    src={photo}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div>
-                  <label
-                    className="block text-sm font-medium text-[#2e3653] mb-2"
-                    htmlFor="signature-upload"
-                  >
-                    Signature
-                  </label>
-                  <div className="space-y-4">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, false)}
-                      className="hidden"
-                      id="signature-upload"
-                    />
-                    <label
-                      htmlFor="signature-upload"
-                      className="cursor-pointer inline-block"
-                    >
-                      <div className="w-40 h-20 border-2 border-dashed border-[#FC8939] rounded-lg flex items-center justify-center bg-[#f8f2ed]">
-                        {signature ? (
-                          <img
-                            src={signature}
-                            alt="Signature"
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <span className="text-[#FC8939]">Upload Signature</span>
-                        )}
-                      </div>
-                    </label>
-                    <p className="text-xs text-[#2e3653]">
-                      Upload your signature (max 1MB)
-                    </p>
-                  </div>
+              )}
+              <div>
+                <h2 className="text-lg font-semibold text-[#FC8939] mb-1">
+                  You are logged in as
+                </h2>
+                <h3 className="text-xl font-bold text-[#2e3653] mb-2">
+                  {user.name}
+                </h3>
+                <div className="flex items-center text-[#2e3653]">
+                  <Mail className="w-4 h-4 mr-2" />
+                  <span>{user.email}</span>
                 </div>
               </div>
             </div>
+            <div>
+              <Button
+                className="bg-[#FC8939] hover:bg-[#e67b2e] text-white flex items-center gap-2"
+                onClick={openUploadModal}
+              >
+                <Upload size={16} />
+                Upload Profile And Signature Image
+              </Button>
+            </div>
           </div>
+
 
           <div className="mt-6 space-y-4 text-sm text-[#2e3653] bg-[#eed4c3] p-4 rounded-lg">
             <p>
@@ -193,13 +174,13 @@ export default function Home() {
         </Card>
 
         <section>
-          <h2 className="text-lg font-semibold text-[#2e3653] mb-4">
+          <h2 className="text-lg font-semibold text-[#2e3653] mb-4 mt-8">
             MY APPLICATIONS (1)
           </h2>
           <Card className="p-6 bg-white">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-[#FC8939]">
-                First Year B.Tech (JNEC) 2025-26
+                {user ? user.selectedProgram : ''} Application Form 2025-26
               </h3>
               <div className="relative w-full h-2 bg-[#eed4c3] rounded-full mt-2">
                 <div
@@ -213,7 +194,7 @@ export default function Home() {
             </div>
             <div className="space-y-4">
               <div className="text-sm text-[#2e3653]">
-                JNEC - First Year B.Tech (2025 - 2026)
+                 {user ? user.selectedProgram : ''} Application Form (2025 - 2026)
               </div>
               {!canContinue ? (
                 <div className="text-sm text-[#FC8939]">
@@ -232,12 +213,13 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-white border-t mt-auto">
+      <footer className="bg-white border-t fixed bottom-0 w-full ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-right text-sm text-[#2e3653]">
           Developed by MGM ERP Team
         </div>
       </footer>
 
+      {/* Image cropper modal */}
       {currentImage && (
         <ImageCropper
           open={cropperOpen}
@@ -249,6 +231,115 @@ export default function Home() {
           onCropComplete={handleCropComplete}
           aspectRatio={isPhotoUpload ? 1 : 3}
         />
+      )}
+
+      {/* Upload modal */}
+      {uploadModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-[#2e3653]">Upload Profile & Signature</h2>
+              <button
+                onClick={closeUploadModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label
+                  className="block text-sm font-medium text-[#2e3653] mb-2"
+                  htmlFor="photo-upload-modal"
+                >
+                  Profile Photo
+                </label>
+                <div className="space-y-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, true)}
+                    className="hidden"
+                    id="photo-upload-modal"
+                  />
+                  <label
+                    htmlFor="photo-upload-modal"
+                    className="cursor-pointer inline-block"
+                  >
+                    <div className="w-full h-40 border-2 border-dashed border-[#FC8939] rounded-lg flex items-center justify-center bg-[#f8f2ed]">
+                      {photo ? (
+                        <img
+                          src={photo}
+                          alt="Profile"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <Upload className="mx-auto h-12 w-12 text-[#FC8939]" />
+                          <span className="mt-2 block text-sm font-medium text-[#FC8939]">Upload Photo</span>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                  <p className="text-xs text-[#2e3653]">
+                    Upload a clear passport size photo (max 1MB)
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm font-medium text-[#2e3653] mb-2"
+                  htmlFor="signature-upload-modal"
+                >
+                  Signature
+                </label>
+                <div className="space-y-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, false)}
+                    className="hidden"
+                    id="signature-upload-modal"
+                  />
+                  <label
+                    htmlFor="signature-upload-modal"
+                    className="cursor-pointer inline-block w-full"
+                  >
+                    <div className="w-full h-20 border-2 border-dashed border-[#FC8939] rounded-lg flex items-center justify-center bg-[#f8f2ed]">
+                      {signature ? (
+                        <img
+                          src={signature}
+                          alt="Signature"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <Upload className="mx-auto h-6 w-6 text-[#FC8939]" />
+                          <span className="mt-1 block text-sm font-medium text-[#FC8939]">Upload Signature</span>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                  <p className="text-xs text-[#2e3653]">
+                    Upload your signature (max 1MB)
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  className="bg-[#FC8939] hover:bg-[#e67b2e] text-white"
+                  onClick={closeUploadModal}
+                  disabled={!photo && !signature}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

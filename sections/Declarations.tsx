@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 
 export interface DeclarationsData {
   agreed: boolean;
@@ -12,6 +13,7 @@ interface DeclarationsProps {
 
 export default function Declarations({ onNext, onPrev }: DeclarationsProps) {
   const [agreed, setAgreed] = useState(false);
+  const { user, logout, loading } = useAuth();
 
   const handleCheckboxChange = () => {
     setAgreed(!agreed);
@@ -29,7 +31,7 @@ export default function Declarations({ onNext, onPrev }: DeclarationsProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Declarations</h3>
+      
 
       <div className="space-y-6">
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
@@ -38,7 +40,7 @@ export default function Declarations({ onNext, onPrev }: DeclarationsProps) {
           </p>
         </div>
 
-        <div className="border border-gray-300 p-4 rounded-md bg-white shadow-sm">
+        <div className="mt-2 border border-gray-300 p-4 rounded-md bg-white shadow-sm">
           <p className="text-gray-700">
             I hereby declare that the information provided in this application form is true, correct,
             and complete to the best of my knowledge and belief. I understand that any false or misleading 
@@ -54,13 +56,13 @@ export default function Declarations({ onNext, onPrev }: DeclarationsProps) {
               className="h-5 w-5 text-[#FC8939] border-gray-300 rounded focus:ring-[#FC8939]"
             />
             <label htmlFor="declaration" className="ml-2 text-gray-700 text-sm">
-              I have read and agree to the terms of the declaration.
+              I, <strong>{user ? user.name : 'Guest'}</strong> have read and agree to the terms of the declaration.
             </label>
           </div>
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between">
+        <div className="mt-4 flex justify-between">
           {onPrev && (
             <button
               type="button"

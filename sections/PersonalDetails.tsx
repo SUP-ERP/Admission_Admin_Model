@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormData } from "../app/FormDataContext";
 
 export interface PersonalDetailsData {
   firstName: string;
@@ -22,6 +23,7 @@ export interface PersonalDetailsData {
   familyIncome: string;
   ruralUrban: string;
   admissionSource: string;
+  abcID: string;
   // Add additional fields here if needed (e.g., abcId) 
 }
 
@@ -56,6 +58,7 @@ const ruralUrbanOptions = ["Rural", "Urban"];
 const admissionSources = ["School", "Friends/Family", "Social Media", "Advertisement", "Other"];
 
 export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps) {
+  const { updateFormData } = useFormData();
   const [formData, setFormData] = useState<PersonalDetailsData>({
     firstName: "",
     middleName: "",
@@ -76,6 +79,7 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
     familyIncome: "",
     ruralUrban: "",
     admissionSource: "",
+    abcID: "",
   });
 
   const handleChange = (
@@ -111,12 +115,15 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
       formData.domicile.trim() !== "" &&
       formData.familyIncome.trim() !== "" &&
       formData.ruralUrban.trim() !== "" &&
-      formData.admissionSource.trim() !== ""
+      formData.admissionSource.trim() !== "" &&
+      formData.abcID.trim() !== ""
     );
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    updateFormData("personalDetails", formData); // Save in context
+
 
     if (isFormValid()) {
       onNext(formData);
@@ -127,7 +134,7 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
 
   return (
     <div className="flex-1">
-      <h3 className="text-xl font-medium mb-4">Personal Details</h3>
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Name Fields */}
@@ -276,6 +283,30 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
               required
             />
           </div>
+          <div>
+            <label htmlFor="abcID" className="block text-sm font-medium text-gray-700 mb-1">
+              ABC ID CARD No. *
+            </label>
+            <input
+              type="number"
+              id="abcID"
+              name="abcID"
+              value={formData.abcID}
+              onChange={(e) => {
+                const { name, value } = e.target;
+                const isValid = /^\d{0,12}$/.test(value);
+
+                if (isValid) {
+                  setFormData({
+                    ...formData,
+                    [name]: value,
+                  });
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
 
           {/* Selection Fields */}
           <div>
@@ -299,19 +330,29 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
 
           {/* More Details */}
           <div>
-            <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700 mb-1">
-              Aadhar Card No. *
-            </label>
-            <input
-              type="text"
-              id="aadharNumber"
-              name="aadharNumber"
-              value={formData.aadharNumber}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
+      <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700 mb-1">
+        Aadhar Card No. *
+      </label>
+      <input
+        type="text"
+        id="aadharNumber"
+        name="aadharNumber"
+        value={formData.aadharNumber}
+        onChange={(e) => {
+          const { name, value } = e.target;
+          const isValid = /^\d{0,12}$/.test(value);
+
+          if (isValid) {
+            setFormData({
+              ...formData,
+              [name]: value,
+            });
+          }
+        }}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+        required
+      />
+    </div>
           {/* New Category Selection */}
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
@@ -475,11 +516,10 @@ export default function PersonalDetails({ onNext, onPrev }: PersonalDetailsProps
           <button
             type="submit"
             disabled={!isFormValid()}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-              isFormValid()
+            className={`flex items-center gap-2 px-4 py-2 rounded-md ${isFormValid()
                 ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
-            }`}
+              }`}
           >
             Next
           </button>
