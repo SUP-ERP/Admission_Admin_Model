@@ -30,10 +30,16 @@ export default function EligibilityCriteria({ onNext, onPrev }: EligibilityCrite
   // Load existing data from context if available
   useEffect(() => {
     if (formData.eligibilityCriteria) {
-      setCriteria(formData.eligibilityCriteria);
+      setCriteria({
+        age: formData.eligibilityCriteria.age || "",
+        qualifyingExam: formData.eligibilityCriteria.qualifyingExam || "",
+        percentage: formData.eligibilityCriteria.percentage || "",
+        entranceExam: formData.eligibilityCriteria.entranceExam || "",
+        entranceScore: formData.eligibilityCriteria.entranceScore || "",
+        residency: formData.eligibilityCriteria.residency || false,
+      });
     }
   }, [formData.eligibilityCriteria]);
-
   // Update field values based on user input
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

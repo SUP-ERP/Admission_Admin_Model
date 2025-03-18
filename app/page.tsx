@@ -189,7 +189,7 @@ export default function Home() {
                 />
               </div>
               <div className="text-sm text-[#2e3653] mt-1">
-                {progress} %Completed
+                {progress}% Completed
               </div>
             </div>
             <div className="space-y-4">
@@ -243,7 +243,7 @@ export default function Home() {
                 onClick={closeUploadModal}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <X size={20} />
+                <X size={20}/>
               </button>
             </div>
 
@@ -327,7 +327,6 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-
               <div className="flex justify-end">
                 <Button
                   className="bg-[#FC8939] hover:bg-[#e67b2e] text-white"

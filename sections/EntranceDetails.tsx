@@ -32,10 +32,17 @@ export default function EntranceDetails({ onNext, onPrev }: EntranceDetailsProps
   // Load existing data from context if available
   useEffect(() => {
     if (formData.entranceDetails) {
-      setEntranceDetails(formData.entranceDetails);
+      setEntranceDetails({
+        examType: formData.entranceDetails.examType || "",
+        rollNumber: formData.entranceDetails.rollNumber || "",
+        yearOfExam: formData.entranceDetails.yearOfExam || new Date().getFullYear().toString(),
+        scoreType: formData.entranceDetails.scoreType || "percentile",
+        score: formData.entranceDetails.score || "",
+        rank: formData.entranceDetails.rank || "",
+        validityPeriod: formData.entranceDetails.validityPeriod || "",
+      });
     }
   }, [formData.entranceDetails]);
-
   // Update state when input/select values change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

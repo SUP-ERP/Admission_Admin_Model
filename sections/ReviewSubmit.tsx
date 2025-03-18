@@ -210,16 +210,12 @@ export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, o
         {/* Program Selection */}
         <div className="border p-4 rounded-md mb-6 print-section">
           <h2 className="font-medium text-lg border-b pb-2 mb-3">Program Preferences</h2>
-          <div className="flex print-row">
-            <div className="w-1/3 font-semibold print-label">Institute:</div>
-            <div className="w-2/3 print-value">{formData.programSelection.selectedInstitute}</div>
-          </div>
           <div className="mt-2">
             <div className="font-semibold mb-1">Program Preferences:</div>
             <ol className="list-decimal pl-5">
-              {formData.programSelection.preferences?.map((prog: ProgramPreference, index: number) => (
-                <li key={index} className="mb-1">{prog.name}</li>
-              ))}
+            {formData.programSelection?.preferences?.map((prog: Program, index: number) => (
+              <li key={index} className="mb-1">{prog.name}</li>
+            ))}
             </ol>
           </div>
         </div>

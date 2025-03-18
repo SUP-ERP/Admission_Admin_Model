@@ -5,6 +5,7 @@ interface Program {
   name: string;
 }
 
+
 interface ProgramSelectionProps {
   onNext: (data: { selectedInstitute: string; preferences: Program[] }) => void;
   onPrev?: () => void;
@@ -14,6 +15,7 @@ export default function ProgramSelection({ onNext, onPrev }: ProgramSelectionPro
   const [selectedInstitute, setSelectedInstitute] = useState("");
   const [selectedProgram, setSelectedProgram] = useState("");
   const [preferences, setPreferences] = useState<Program[]>([]);
+
 
   // Example institutes and programs from JSON
   const institutes = [
@@ -306,28 +308,26 @@ export default function ProgramSelection({ onNext, onPrev }: ProgramSelectionPro
       </div>
 
       {/* Navigation Buttons */}
-<div className="flex justify-between mt-6 pt-4 border-t">
-  {onPrev && (
-    <button
-      onClick={onPrev}
-      className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]"
-    >
-      Previous
-    </button>
-  )}
-  <button
-    onClick={handleNext}
-    disabled={!isValid}
-    className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-      isValid
-        ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
-    }`}
-  >
-    Next
-  </button>
-</div>
-
+      <div className="flex justify-between mt-6 pt-4 border-t">
+        {onPrev && (
+          <button
+            onClick={onPrev}
+            className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#FC8939]"
+          >
+            Previous
+          </button>
+        )}
+        <button
+          onClick={handleNext}
+          disabled={!isValid}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md ${isValid
+              ? "bg-[#2e3653] text-white hover:bg-[#FC8939] cursor-pointer"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
