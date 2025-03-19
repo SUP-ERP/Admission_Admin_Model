@@ -1,7 +1,9 @@
 import { useFormData } from "../app/FormDataContext";
 import { useRef } from "react";
 
-type ProgramPreference = {
+
+
+type Program = {
   name: string;
 };
 
@@ -12,11 +14,11 @@ export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, o
   const handlePrint = () => {
     const printContent = printSectionRef.current;
     if (!printContent) return;
-  
+
     // Store original document content
     const originalContents = document.body.innerHTML;
     const printContents = printContent.innerHTML;
-    
+
     // Create themed print layout
     document.body.innerHTML = `
       <style>
@@ -149,26 +151,33 @@ export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, o
         </div>
       </div>
     `;
-    
+
     // Trigger print dialog
     window.print();
-    
+
     // Restore original content after printing
     document.body.innerHTML = originalContents;
   };
+
+  console.log("FormData:", formData);
+  console.log("Program Selection:", formData.programSelection);
+  console.log("Preferences:", formData.programSelection.preferences);
+  console.log("Program Selection data:", formData.programSelection);
+
+
 
   return (
     <div>
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-xl font-bold text-[#2e3653]">Application Review Summary</h2>
-        <button 
-          onClick={handlePrint} 
+        <button
+          onClick={handlePrint}
           className="px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#3a4266] transition"
         >
           Print Review
         </button>
       </div>
-      
+
       <div ref={printSectionRef} className="print-content">
         {/* Personal Details */}
         <div className="border p-4 rounded-md mb-6 print-section">
@@ -186,37 +195,96 @@ export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, o
         {/* Education History */}
         <div className="border p-4 rounded-md mb-6 print-section">
           <h2 className="font-medium text-lg border-b pb-2 mb-3">Education History</h2>
-          <div className="space-y-3">
-            {formData.educationHistory.map((record, index) => (
-              <div key={index} className={`pb-2 ${index < formData.educationHistory.length - 1 ? 'border-b' : ''}`}>
-                <div className="flex flex-col">
-                  <span className="font-semibold">{record.level}</span>
-                  <span>{record.institution} ({record.yearOfPassing})</span>
+
+          {formData.educationHistory && formData.educationHistory.length > 0 ? (
+            <div className="space-y-4">
+              {formData.educationHistory.map((record, index) => (
+                <div key={index} className={`pb-3 ${index < formData.educationHistory.length - 1 ? 'border-b' : ''}`}>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-base">{record.level}</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
+                      <div>
+                        <span className="text-gray-600 text-sm">Institution:</span>
+                        <span className="ml-1">{record.institution}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Board/University:</span>
+                        <span className="ml-1">{record.board}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Year of Passing:</span>
+                        <span className="ml-1">{record.yearOfPassing}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Percentage/CGPA:</span>
+                        <span className="ml-1">{record.percentage}</span>
+                      </div>
+                      {record.subjects && (
+                        <div className="col-span-2">
+                          <span className="text-gray-600 text-sm">Major Subjects:</span>
+                          <span className="ml-1">{record.subjects}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 italic">No education records added</p>
+          )}
         </div>
 
         {/* Category Selection */}
         <div className="border p-4 rounded-md mb-6 print-section">
           <h2 className="font-medium text-lg border-b pb-2 mb-3">Category</h2>
-          <div className="flex print-row">
-            <div className="w-1/3 font-semibold print-label">Selected Category:</div>
-            <div className="w-2/3 print-value">{formData.categorySelection.category} - {formData.categorySelection.subcategory}</div>
+          <div className="flex print-row mt-1 ">
+            <div className="w-1/3 font-semibold print-label ">Selected Category: </div>
+            <div className="w-2/3 print-value "> {formData.categorySelection.category} - {formData.categorySelection.subcategory}</div>
           </div>
         </div>
 
         {/* Program Selection */}
         <div className="border p-4 rounded-md mb-6 print-section">
           <h2 className="font-medium text-lg border-b pb-2 mb-3">Program Preferences</h2>
+
+          {/* Institute Information */}
+          <div className="mt-1">
+            <div className="flex print-row mb-3">
+              <div className="w-1/3 font-semibold print-label">Institute:</div>
+              <div className="w-2/3 print-value">
+                {formData.programSelection?.selectedInstitute || "Not selected"}
+              </div>
+            </div>
+          </div>
+
+          {/* Program Preferences Table */}
           <div className="mt-2">
-            <div className="font-semibold mb-1">Program Preferences:</div>
-            <ol className="list-decimal pl-5">
-            {formData.programSelection?.preferences?.map((prog: Program, index: number) => (
-              <li key={index} className="mb-1">{prog.name}</li>
-            ))}
-            </ol>
+            <div className="font-semibold mb-2">Program Preferences:</div>
+
+            {Array.isArray(formData.programSelection?.preferences) &&
+              formData.programSelection.preferences.length > 0 ? (
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border px-3 py-2 text-left w-16">No.</th>
+                    <th className="border px-3 py-2 text-left">Program Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {formData.programSelection.preferences.map((prog, index) => (
+                    <tr key={index}>
+                      <td className="border px-3 py-2 text-center">{index + 1}</td>
+                      <td className="border px-3 py-2">
+                        {prog && typeof prog === 'object' && 'name' in prog ? prog.name : 'Unknown program'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No preferences selected</p>
+            )}
           </div>
         </div>
 
@@ -249,37 +317,81 @@ export default function ReviewSubmit({ onNext, onPrev }: { onNext: () => void, o
         {/* Uploaded Documents */}
         <div className="border p-4 rounded-md mb-6 print-section">
           <h2 className="font-medium text-lg border-b pb-2 mb-3">Uploaded Documents</h2>
-          <div className="space-y-2">
-            {Object.entries(formData.uploadDocuments).map(([key, file]) => (
-              <div key={key} className="flex print-row">
-                <div className="w-1/3 font-semibold print-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</div>
-                <div className="w-2/3 print-value">
-                  {file instanceof Blob ? (
-                    <div className="flex items-center">
-                      <span className="mr-2">Uploaded</span>
-                      <span className="text-green-500">✓</span>
-                      <a href={URL.createObjectURL(file)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 underline no-print">View</a>
-                    </div>
-                  ) : (
-                    "Not uploaded"
-                  )}
-                </div>
+          <div className="space-y-4 mt-2">
+            {formData.uploadDocuments && Object.keys(formData.uploadDocuments).length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(formData.uploadDocuments).map(([key, file], index) => (
+                  <div key={key} className="border rounded-md p-3 shadow-sm bg-white">
+                    <h3 className="font-medium text-sm mb-2">
+                      {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                    </h3>
+
+                    {/* File Preview Section */}
+                    {file instanceof File ? (
+                      <div className="mb-3">
+                        {/* Show image preview */}
+                        {file.name.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={key}
+                            className="w-full h-40 object-cover rounded-md border"
+                          />
+                        ) : file.name.match(/\.(pdf)$/i) ? (
+                          // Show embedded PDF for preview
+                          <iframe
+                            src={URL.createObjectURL(file)}
+                            title={key}
+                            className="w-full h-40 border rounded-md"
+                          />
+                        ) : (
+                          <div className="text-gray-500 italic">Cannot preview this file type</div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 italic">No document available</p>
+                    )}
+
+                    {/* View/Download Button */}
+                    {file instanceof File ? (
+                      <a
+                        href={URL.createObjectURL(file)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-600 text-black px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+                      >
+                        View/Download
+                      </a>
+                    ) : (
+                      <button
+                        disabled
+                        className="bg-gray-300 text-gray-600 px-4 py-2 rounded-md text-sm cursor-not-allowed"
+                      >
+                        No File
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <p className="text-gray-500 italic">No documents uploaded</p>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Navigation Buttons */}
-      <div className="mt-6 flex justify-between no-print">
-        {onPrev && (
-          <button onClick={onPrev} className="px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#3a4266] transition">
-            Edit Details
+
+
+
+        {/* Navigation Buttons */}
+        <div className="mt-6 flex justify-between no-print">
+          {onPrev && (
+            <button onClick={onPrev} className="px-4 py-2 rounded-md bg-[#2e3653] text-white hover:bg-[#3a4266] transition">
+              Edit Details
+            </button>
+          )}
+          <button onClick={onNext} className="px-4 py-2 rounded-md transition bg-[#FC8939] text-white hover:bg-[#e57830] cursor-pointer">
+            Confirm & Submit
           </button>
-        )}
-        <button onClick={onNext} className="px-4 py-2 rounded-md transition bg-[#FC8939] text-white hover:bg-[#e57830] cursor-pointer">
-          Confirm & Submit
-        </button>
+        </div>
       </div>
     </div>
   );

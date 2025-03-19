@@ -26,7 +26,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
 
   // Helper function to validate the form
   const checkFormValid = (cat: string, subcat: string, file: File | null): boolean => {
-    if (cat === "general") {
+    if (cat === "General") {
       return true;
     } else {
       if (!file) return false;
@@ -89,17 +89,17 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
             required
           >
             <option value="">-- Select Category --</option>
-            <option value="general">General</option>
-            <option value="sc">Scheduled Caste (SC)</option>
-            <option value="st">Scheduled Tribe (ST)</option>
-            <option value="obc">Other Backward Class (OBC)</option>
-            <option value="pwd">Person with Disability (PwD)</option>
-            <option value="ews">Economically Weaker Section (EWS)</option>
+            <option value="General">General</option>
+            <option value="SC">Scheduled Caste (SC)</option>
+            <option value="ST">Scheduled Tribe (ST)</option>
+            <option value="OBC">Other Backward Class (OBC)</option>
+            <option value="PWD">Person with Disability (PwD)</option>
+            <option value="EWS">Economically Weaker Section (EWS)</option>
           </select>
         </div>
 
         {/* Subcategory Selection */}
-        {category && (category === "obc" || category === "pwd") && (
+        {category && (category === "OBC" || category === "PWD") && (
           <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Sub-Category *
@@ -111,17 +111,17 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
               required
             >
               <option value="">-- Select Sub-Category --</option>
-              {category === "obc" && (
+              {category === "OBC" && (
                 <>
-                  <option value="obc-ncl">OBC (Non-Creamy Layer)</option>
-                  <option value="obc-cl">OBC (Creamy Layer)</option>
+                  <option value="OBC-NCL">OBC (Non-Creamy Layer)</option>
+                  <option value="OBC-CL">OBC (Creamy Layer)</option>
                 </>
               )}
-              {category === "pwd" && (
+              {category === "PWD" && (
                 <>
-                  <option value="pwd-locomotor">Locomotor Disability</option>
-                  <option value="pwd-visual">Visual Impairment</option>
-                  <option value="pwd-hearing">Hearing Impairment</option>
+                  <option value="PWD-Locomotor Disability">Locomotor Disability</option>
+                  <option value="PWD-Visual">Visual Impairment</option>
+                  <option value="PWD-Hearing">Hearing Impairment</option>
                 </>
               )}
             </select>
@@ -129,7 +129,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
         )}
 
         {/* Document Upload Requirement */}
-        {category && category !== "general" && (
+        {category && category !== "General" && (
           <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-md">
             <p className="font-medium text-yellow-800">Important:</p>
             <p className="text-yellow-700">
@@ -139,7 +139,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
         )}
 
         {/* EWS Specific Instructions */}
-        {category === "ews" && (
+        {category === "EWS" && (
           <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-md">
             <p className="font-medium text-blue-800">EWS Certificate Requirements:</p>
             <ul className="list-disc pl-5 mt-2 text-blue-700">
@@ -151,7 +151,7 @@ export default function CategorySelection({ onNext, onPrev }: CategorySelectionP
         )}
 
         {/* Document Upload Section */}
-        {category && category !== "general" && (
+        {category && category !== "General" && (
           <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Upload Category Certificate *

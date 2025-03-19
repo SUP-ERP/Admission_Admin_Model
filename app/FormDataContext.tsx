@@ -11,6 +11,7 @@ interface FormData {
   eligibilityCriteria: any;
   entranceDetails: any;
   uploadDocuments: any;
+  selectedFaculty: string; // NEW FIELD
 }
 
 interface FormContextProps {
@@ -20,17 +21,21 @@ interface FormContextProps {
 
 const FormDataContext = createContext<FormContextProps | undefined>(undefined);
 
-export const FormDataProvider = ({ children }: { children: React.ReactNode }) => {
+export const FormDataProvider = ({ children }: { children: React.ReactNode }) => {  
   const [formData, setFormData] = useState<FormData>({
     personalDetails: {},
     educationHistory: [],
     categorySelection: {},
-    programSelection: {},
+    programSelection: {
+      selectedInstitute: "",
+      preferences: []
+    },
     eligibilityCriteria: {},
     entranceDetails: {},
     uploadDocuments: {},
-    
+    selectedFaculty: "",
   });
+  
 
   const updateFormData = (section: keyof FormData, data: any) => {
     setFormData((prev) => ({ ...prev, [section]: data }));
