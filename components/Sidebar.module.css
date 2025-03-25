@@ -1,0 +1,90 @@
+/* Sidebar.module.css */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #2E3653; /* Updated background color */
+    height: 350vh; /* Optional: Make the sidebar fill the viewport height */
+}
+
+
+.facultyInfo {
+    text-align: center;
+    margin-bottom: 40px; /* Spacing between the text and steps */
+}
+
+.facultyName {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FC8939; /* Faculty Name color */
+    margin-bottom: 5px; /* Adjust for better spacing */
+}
+
+.applicationForm {
+    font-size: 18px;
+    font-weight: normal;
+    color: #FC8939; /* Application Form color */
+}
+
+.nav {
+    width: 100%;
+    margin-top: 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align steps to the left */
+    padding-left: 20px; /* Add some padding for proper alignment */
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    margin: 15px 0; /* Adjusted spacing between steps */
+    position: relative;
+}
+
+/* Add vertical line between steps */
+.step::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 30px; /* Reduced line height */
+    background-color: #fff; /* Line color */
+    left: 25px; /* Align with step number */
+    top: 100%; /* Extend downward */
+}
+
+.step:last-child::after {
+    display: none; /* Remove line after last step */
+}
+
+.stepNumber {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.stepTitle {
+    font-size: 18px;
+    color: white;
+}
+
+.active .stepNumber {
+    background-color: #FC8939;
+    color: white;
+}
+
+.completed .stepNumber {
+    background-color: #4CAF50;
+    color: white;
+}

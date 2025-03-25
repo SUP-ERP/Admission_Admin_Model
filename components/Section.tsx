@@ -13,6 +13,11 @@ import Declarations from "../sections/Declarations";
 import ReviewSubmit from "../sections/ReviewSubmit";
 import MakePayment from "../sections/MakePayment";
 import { useAuth } from "@/lib/auth-context";
+import ViewAllForms from "@/sections/ViewAllForms";
+import ViewAcceptedForms from "../components/ViewAcceptedForms";
+import ViewRejectedForms from "../components/ViewRejectedForms";
+
+import ViewMeritList from "@/sections/ViewMeritList";
 
 
 // Updated interface to include navigation callbacks
@@ -28,25 +33,14 @@ export default function Section({ sectionId, onNext, onPrev }: SectionProps) {
       case 1:
         return <Guidelines onNext={onNext} onPrev={onPrev} />;
       case 2:
-        return <ProgramSelection onNext={onNext} onPrev={onPrev} />;
+        return <ViewAllForms  />;
       case 3:
-        return <PersonalDetails onNext={onNext} onPrev={onPrev} />;
+        return <ViewAcceptedForms  />;
       case 4:
-        return <EligibilityCriteria onNext={onNext} onPrev={onPrev} />;
+        return <ViewRejectedForms />;
       case 5:
-        return <CategorySelection onNext={onNext} onPrev={onPrev} />;
-      case 6:
-        return <EducationHistory onNext={onNext} onPrev={onPrev} />;
-      case 7:
-        return <EntranceDetails onNext={onNext} onPrev={onPrev} />;
-      case 8:
-        return <UploadDocuments onNext={onNext} onPrev={onPrev} />;
-      case 9:
-        return <Declarations onNext={onNext} onPrev={onPrev} />;
-      case 10:
-        return <ReviewSubmit onNext={onNext} onPrev={onPrev} />;
-      case 11:
-        return <MakePayment onNext={onNext} onPrev={onPrev} />;
+        return <ViewMeritList />;
+      
       default:
         return (
           <div className="text-red-500 text-center">❌ Section Not Found</div>

@@ -1,0 +1,134 @@
+/* Form container styling */
+.form-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #EED4C3;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Section styling */
+.section {
+  background-color: white;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+/* Table styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #ccc;
+}
+
+.table-heading {
+  font-weight: bold;
+  text-align: left;
+  padding: 8px 16px;
+  width: 35%; /* Adjust width for better spacing */
+}
+
+.table-value {
+  padding: 8px 16px;
+  text-align: left;
+  word-break: break-word; /* Handle long text gracefully */
+}
+
+/* Ensure proper spacing between rows */
+.data-table tbody tr:last-child {
+  border-bottom: none; /* No bottom border for the last row */
+}
+
+/* Document Link Styling */
+.document-link {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.document-link:hover {
+  color: #0056b3;
+}
+
+/* Button container and buttons */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px; /* Add space between buttons and content */
+}
+
+.accept-button,
+.reject-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  font-weight: bold; /* Make button text bold */
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.accept-button {
+  background-color: #28a745;
+}
+
+.reject-button {
+  background-color: #dc3545;
+}
+
+.accept-button:hover {
+  background-color: #218838;
+}
+
+.reject-button:hover {
+  background-color: #c82333;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #EED4C3;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.border-box {
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* More existing styles, plus other section styling as needed */

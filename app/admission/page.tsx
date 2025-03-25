@@ -10,17 +10,12 @@ import Sidebar from "@/components/Sidebar";
 import Section from "@/components/Section";
 
 const sections = [
-  { id: 1, title: "Guidelines" },
-  { id: 2, title: "Program Selection" },
-  { id: 3, title: "Personal Details" },
-  { id: 4, title: "Eligibility Criteria" },
-  { id: 5, title: "Category Selection" },
-  { id: 6, title: "Education History" },
-  { id: 7, title: "Entrance Details" },
-  { id: 8, title: "Upload Documents" },
-  { id: 9, title: "Declarations" },
-  { id: 10, title: "Review & Submit" },
-  { id: 11, title: "Make Payment" },
+  { id: 1, title: "Enquiry" },
+  { id: 2, title: "View all forms" },
+  { id: 3, title: "View accepted forms" },
+  { id: 4, title: "View rejected forms" },
+  { id: 5, title: "Merit List" },
+  
 ];
 
 export default function Admission() {
@@ -45,7 +40,7 @@ export default function Admission() {
           sections={sections}
           selectedSection={selectedSection}
           setSelectedSection={setSelectedSection}
-          progress={progress}
+          
         />
 
         {/* Main Content Area */}

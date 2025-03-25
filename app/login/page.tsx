@@ -53,7 +53,7 @@ export default function Login() {
     const success = await login(email, password, name, selectedProgram);
 
     if (success) {
-      router.push("/"); // Redirect to homepage or dashboard after login
+      router.push("/admission"); // Redirect to homepage or dashboard after login
     } else {
       setError("Invalid credentials");
     }

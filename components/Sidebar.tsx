@@ -1,40 +1,41 @@
-import { ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-
+import styles from "./Sidebar.module.css";
+import Image from "next/image";
+import classNames from "classnames"; // Ensure you have this installed
 
 interface SidebarProps {
   sections: { id: number; title: string }[];
   selectedSection: number;
   setSelectedSection: (id: number) => void;
-  progress: number;
 }
 
-export default function Sidebar({ sections, selectedSection, setSelectedSection, progress }: SidebarProps) {
-  const { user, logout, loading } = useAuth();
+export default function Sidebar({ sections, selectedSection, setSelectedSection }: SidebarProps) {
+  const { user } = useAuth();
+
   return (
-    <div className="w-64 bg-[#2e3653] text-white">
-      <div className="p-4 bg-[#FC8939] text-white">
-        <h2 className="text-lg font-semibold">{user ? user.selectedProgram : ''} Application Form 2025-26</h2>
-        <div className="mt-2">
-          <div className="w-full bg-[#eed4c3] rounded-full h-2">
-            <div className="bg-white h-2 rounded-full" style={{ width: `${progress}%` }} />
-          </div>
-          <p className="text-sm mt-1">{progress}% completed</p>
-        </div>
+    <div className={styles.sidebar}>
+      
+
+      {/* Faculty Name and Application Form */}
+      <div className={styles.facultyInfo}>
+        <h3 className={styles.facultyName}>Engineering and Technology</h3>
+        <h3 className={styles.applicationForm}>Application Form 2025-26</h3>
       </div>
 
-      <nav className="mt-4">
+      {/* Steps */}
+      <nav className={styles.nav}>
         {sections.map((section) => (
-          <button
+          <div
             key={section.id}
             onClick={() => setSelectedSection(section.id)}
-            className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-[#FC8939] transition-colors ${
-              selectedSection === section.id ? "bg-[#FC8939]" : ""
-            }`}
+            className={classNames(styles.step, {
+              [styles.active]: selectedSection === section.id,
+              [styles.completed]: section.id < selectedSection,
+            })}
           >
-            <span>{section.title}</span>
-            <ChevronRight size={16} />
-          </button>
+            <div className={styles.stepNumber}>{section.id}</div>
+            <span className={styles.stepTitle}>{section.title}</span>
+          </div>
         ))}
       </nav>
     </div>
